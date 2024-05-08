@@ -1,0 +1,71 @@
+---
+title: "Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+
+project_dataset <- read.csv("Joshi_manipulated_dataset.csv")
+
+# Convert 'precipitation' column to factor
+project_dataset$precipitation <- factor(project_dataset$precipitation, levels = c("No", "Yes"))
+
+# Count number of days with rainfall each year
+rainfall_counts <- project_dataset %>%
+  group_by(year) %>%
+  summarise(rainfall_days = sum(precipitation == "Yes"))
+
+# Convert 'wspd' and 'pres' columns to double
+project_dataset$wspd <- as.double(project_dataset$wspd)
+project_dataset$pres <- as.double(project_dataset$pres)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+# Create a bar plot
+ggplot(rainfall_counts, aes(x = year, y = rainfall_days, fill = factor(year))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = rainbow(nrow(rainfall_counts))) +
+  labs(title = "Number of Days with Rainfall Each Year",
+       x = "Year",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+# Create box plot for 'wspd' column
+ggplot(project_dataset, aes(x = "", y = wspd)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Box Plot of Wind Speed (wspd)",
+       x = "",
+       y = "Wind Speed")
+```
+
+### Chart C
+
+```{r}
+# Create box plot for 'pres' column
+ggplot(project_dataset, aes(x = "", y = pres)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Box Plot of Air Pressure (pres)",
+       x = "",
+       y = "Air Pressure")
+
+```
+

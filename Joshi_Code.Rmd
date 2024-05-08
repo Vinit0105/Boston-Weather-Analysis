@@ -1,0 +1,491 @@
+```{r}
+# Final Project
+
+# Load the dataset
+project_dataset <- read.csv("Joshi_dataset.csv")
+
+# Display the first few rows of the dataset
+head(project_dataset)
+
+print(project_dataset)
+
+```
+
+```{r}
+# Data Cleaning 1: Identify missing values in Column B (average temperature) and filling them ith an average of minimum and maximum temperature
+
+# Find rows with NA values in column of average temperature
+na_rows <- which(is.na(project_dataset$tavg))
+
+# Iterate through NA rows
+for (i in na_rows) {
+  # Calculate average of adjacent cells from columns of minimum and maximum temperatur
+  average <- mean(c(project_dataset$tmin[i], project_dataset$tmax[i]), na.rm = TRUE)
+  
+  # Assign the calculated average value in column B where there are missing values
+  project_dataset$tavg[i] <- average
+}
+
+# Print updated dataset
+print(project_dataset)
+
+```
+
+```{r}
+# Data Cleaning 2: Checking if there any missing values in the column of average temperature 
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$tavg))) {
+  print("No missing values in the column of average temperature")
+} else {
+  print("Missing values found in column of average temperature")
+}
+```
+
+```{r}
+# Data Cleaning 3: Checking if there any missing values in the column of minimum temperature 
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$tmin))) {
+  print("No missing values in the column of minimum temperature")
+} else {
+  print("Missing values found in column of minimum temperature")
+}
+```
+
+```{r}
+# Data Cleaning 4: Checking if there any missing values in the column of maximum temperature 
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$tmax))) {
+  print("No missing values in the column of maximum temperature")
+} else {
+  print("Missing values found in column of maximum temperature")
+}
+```
+
+```{r}
+# Data Cleaning 5: Checking if there any missing values in the column of precipitation
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$prcp))) {
+  print("No missing values in the column of precipitation")
+} else {
+  print("Missing values found in column of precipitation")
+}
+```
+
+```{r}
+# Data Cleaning 6: Finding the missing values in the column of wind direction and writing "Unknown" in those cells
+
+# Find missing values in column of wind direction
+missing_values <- which(is.na(project_dataset$wdir))
+
+# Replace missing values with "Unknown"
+project_dataset$wdir[missing_values] <- "Unknown"
+
+# Print updated dataset
+print(project_dataset)
+
+```
+
+```{r}
+# Data Cleaning 7: Checking if there any missing values in the column of wind speed
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$spd))) {
+  print("No missing values in the column of wind speed")
+} else {
+  print("Missing values found in column of wind speed")
+}
+```
+
+```{r}
+# Data Cleaning 8: Replacing the missing values in the column of air pressure by taking an average of above and below values of the same column
+
+# Find missing values in column of air pressure
+missing_values_in_pres <- which(is.na(project_dataset$pres))
+
+# Iterate through missing values
+for (i in missing_values_in_pres) {
+  # Calculate average of the value above and below
+  average <- mean(c(project_dataset$pres[i - 1], project_dataset$pres[i + 1]), na.rm = TRUE)
+  
+  # Replace missing value with the calculated average
+  project_dataset$pres[i] <- average
+}
+
+# Print updated dataset
+print(project_dataset)
+
+```
+
+```{r}
+# Data Cleaning 9: Checking if there any missing values in the column of time 
+
+# Check if there are missing values in column of average temperature
+if (!any(is.na(project_dataset$time))) {
+  print("No missing values in the column of time")
+} else {
+  print("Missing values found in column of time")
+}
+```
+
+```{r}
+# Data Cleaning 10: Checking if there any duplicates in the column of time
+
+# Check for duplicates in the "time" column
+duplicates <- duplicated(project_dataset$time)
+
+# Print duplicated values, if any
+if (any(duplicates)) {
+  print("Duplicates found in the 'time' column:")
+  print(project_dataset$time[duplicates])
+} else {
+  print("No duplicates found in the 'time' column")
+}
+
+```
+
+
+```{r}
+# Data Cleaning 11: Checking for missing values in the entire dataset
+
+# Creating a if loop 
+if (any(is.na(project_dataset))) {
+  print("Missing values found in the dataset")
+} else {
+  print("No missing values found in the dataset")
+}
+
+```
+
+```{r}
+# Data Cleaning 12: Correcting the datatype of each column
+
+# Convert column of "time" to Date
+project_dataset$time <- as.Date(project_dataset$time)
+
+# Convert columns "tavg" to "prcp" to double
+project_dataset$tavg <- as.double(project_dataset$tavg)
+project_dataset$tmin <- as.double(project_dataset$tmin)
+project_dataset$tmax <- as.double(project_dataset$tmax)
+project_dataset$prcp <- as.double(project_dataset$prcp)
+
+# Convert column "wdir" to character
+project_dataset$wdir <- as.character(project_dataset$wdir)
+
+# Convert columns "wspd" and "pres" to double
+project_dataset$wspd <- as.double(project_dataset$wspd)
+project_dataset$pres <- as.double(project_dataset$pres)
+
+# Print updated dataset
+print(project_dataset)
+
+```
+
+```{r}
+# Data Manipulation 1: Removing leading and trailing spaces in the entire dataset
+
+# Use the trimws() function. 
+project_dataset <- data.frame(lapply(project_dataset, trimws))
+
+# Print updated dataset
+print(project_dataset)
+
+```
+
+```{r}
+# Data Manipulation 2: Adding an attribute of year to the dataset
+
+# Convert time column to Date format in this chunk also
+project_dataset$time <- as.Date(project_dataset$time)
+
+# Extract year from the "time" column
+project_dataset$Year <- format(project_dataset$time, "%Y")
+
+# Rename the new column to "Year"
+names(project_dataset)[names(project_dataset) == "Year"] <- "year"
+
+# Print updated dataset
+print(project_dataset)
+```
+
+```{r}
+# Data Manipulation 3: Adding an attribute of month name to the dataset
+
+# Extract month from the "time" column and convert to full month names
+project_dataset$Month <- month.name[as.numeric(format(project_dataset$time, "%m"))]
+
+# Print updated dataset
+print(project_dataset)
+```
+
+```{r}
+# Data Manipulation 4: Sorting the dataset as per the tavg
+
+# Convert the column of average temperature to double format in this chunk also
+project_dataset$tavg <- as.double(project_dataset$tavg)
+
+# Sort the data based on the values in the "tavg" column in descending order
+project_dataset <- project_dataset[order(-project_dataset$tavg), ]
+
+# Print the sorted dataset
+print(project_dataset)
+```
+
+```{r}
+# Data Manipulation 5: Adding an attribute "temperature_category" to the dataset
+
+# Create a new column "temperature_category" based on the "tavg" values
+project_dataset$temperature_category <- ifelse(project_dataset$tavg < -5, "Extreme Cold",
+                                   ifelse(project_dataset$tavg < 5, "Cold",
+                                          ifelse(project_dataset$tavg < 20, "Moderate", "Warm")))
+
+# Print the updated dataset
+print(project_dataset)
+```
+
+```{r}
+# Data Manipulation 6: Normalizing the values of average temperature
+
+# Normalization
+norm <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+project_dataset$tavgnorm <- norm(project_dataset$tavg)
+
+# Z-Score Normalization
+z_score_norm <- function(x) {
+  (x - mean(x)) / sd(x)
+}
+
+project_dataset$tavg_z_score_norm <- z_score_norm(project_dataset$tavg)
+
+# Print the updated dataset
+print(project_dataset)
+```
+
+```{r}
+# Data Manipulation 7: Adding a new column named precipitation
+
+# Enter either yes or no in the new column depending on the value
+project_dataset$precipitation <- ifelse(project_dataset$prcp > 0, "Yes", "No")
+
+# Print the updated dataset
+print(project_dataset)
+```
+
+
+```{r}
+# Data Analysis 1: Pivot Table 1
+
+# Importing the required libraries
+library(dplyr)
+library(tidyr)
+
+# Define the desired order of months
+month_order <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+# Creating a pivot table
+pivot_table <- project_dataset %>%
+  # Extract month from the date/time column
+  mutate(month = factor(format(time, "%B"), levels = month_order)) %>%
+  # Group by month and temperature category, then count tavg values
+  group_by(month, temperature_category) %>%
+  summarise(count_tavg = n()) %>%
+  # Pivot the table
+  pivot_wider(names_from = temperature_category, values_from = count_tavg, values_fill = 0)
+
+# Print the pivot table
+print(pivot_table)
+```
+
+```{r}
+# Data Analysis 2: Pivot Table 2
+
+# Importing the required libraries
+library(dplyr)
+library(tidyr)
+
+# Creating a pivot table
+pivot_table <- project_dataset %>%
+  # Extract year from the date/time column
+  mutate(year = format(time, "%Y")) %>%
+  # Group by year and temperature category, then count tavg values
+  group_by(year, temperature_category) %>%
+  summarise(count_tavg = n()) %>%
+  # Pivot the table
+  pivot_wider(names_from = temperature_category, values_from = count_tavg, values_fill = 0)
+
+# Print the pivot table
+print(pivot_table)
+```
+
+```{r}
+# Data Analaysis 3: Correlation between tavg and prcp values
+
+# Convert columns "tavg" and "prcp" values to double
+project_dataset$tavg <- as.double(project_dataset$tavg)
+project_dataset$prcp <- as.double(project_dataset$prcp)
+
+# Using cor function
+correlation_1 <- cor(project_dataset$tavg, project_dataset$prcp)
+
+# Print the correlation coefficient
+paste("The correlation is:", correlation_1)
+```
+
+```{r}
+# Data Analysis 4: Correlation between tavg and pres values
+
+# Convert columns "tavg" and "prcp" values to double
+project_dataset$tavg <- as.double(project_dataset$tavg)
+project_dataset$pres <- as.double(project_dataset$pres)
+
+# Using cor function
+correlation_2 <- cor(project_dataset$tavg, project_dataset$pres)
+
+# Print the correlation coefficient
+paste("The correlation is:", correlation_2)
+```
+
+```{r}
+# Data Analysis 5: Incorporating knn classifier
+
+# Make a subset of having year as the label variable and other numeric columns
+project_dataset.subset <- project_dataset[c('precipitation', 'tavg', 'tmin', 'tmax', 'prcp', 'wdir', 'wspd', 'pres')]
+
+# Binary conversion of "precipitation" column
+project_dataset.subset$precipitation <- ifelse(project_dataset.subset$precipitation == "Yes", 1, 
+                                      ifelse(project_dataset.subset$precipitation == "No", 0, project_dataset.subset$precipitation))
+
+# Convert the required columns to double
+project_dataset.subset$tavg <- as.double(project_dataset.subset$tavg)
+project_dataset.subset$tmin <- as.double(project_dataset.subset$tmin)
+project_dataset.subset$tmax <- as.double(project_dataset.subset$tmax)
+project_dataset.subset$prcp <- as.double(project_dataset.subset$prcp)
+project_dataset.subset$wdir <- as.double(project_dataset.subset$wdir)
+project_dataset.subset$wspd <- as.double(project_dataset.subset$wspd)
+project_dataset.subset$pres <- as.double(project_dataset.subset$pres)
+
+# Remove rows with missing values
+project_dataset.subset <- project_dataset.subset[complete.cases(project_dataset.subset),]
+
+#Normalization
+normalize <- function(x) {
+return ((x - min(x)) / (max(x) - min(x)))  }
+project_dataset.subset.n <- as.data.frame(lapply(project_dataset.subset[,2:8], normalize))
+
+#Splice the data
+set.seed(123)
+dat.d <- sample(1:nrow(project_dataset.subset.n),size = nrow(project_dataset.subset.n)*0.8,replace = FALSE)
+
+# Random selection of 80% of data
+train.project_dataset <- project_dataset.subset[dat.d,] # 80% training data
+test.project_dataset <- project_dataset.subset[-dat.d,] # remaining 20% test data
+
+# Create a seperate dataframe for 'year' feature which is our target
+train.project_dataset.labels <- project_dataset.subset[dat.d,1]
+test.project_dataset.labels <- project_dataset.subset[-dat.d,1]
+
+# Find the number of observations
+NROW(train.project_dataset.labels)
+NROW(test.project_dataset.labels)
+
+# Build a knn() classifier using the “class” package. Set k=9
+library(class)
+knn.9 <- knn(train = train.project_dataset , test = test.project_dataset, cl = train.project_dataset.labels, k=9 )
+
+# Check prediction against actual value in tabular form for k = 9
+library(caret)
+confusionMatrix(table(knn.9, test.project_dataset.labels))
+
+# Calculate the proportion of correct classification for k = 9 (Find the accuracy)
+required_accuracy <- 100 * sum(test.project_dataset.labels == knn.9) / NROW(test.project_dataset.labels)
+print(paste("The accuracy is: ", required_accuracy))
+```
+
+```{r}
+# Extracting the data into an excel file for continuing further work in Python
+write.csv(project_dataset, "Joshi_manipulated_dataset.csv", row.names = FALSE)
+```
+
+```{r}
+# Data Analysis 9: Summary Statistics
+
+# Use summary function for average temperature
+print("Summary for average temperature:")
+project_dataset$tavg <- as.double(project_dataset$tavg)
+summary(project_dataset$tavg)
+
+# Use summary function for minimum temperature
+print("Summary for minimum temperature:")
+project_dataset$tmin <- as.double(project_dataset$tmin)
+summary(project_dataset$tmin)
+
+# Use summary function for maximum temperature
+print("Summary for mmaximum temperature:")
+project_dataset$tmax <- as.double(project_dataset$tmax)
+summary(project_dataset$tmax)
+
+# Use summary function for precipitation
+print("Summary for precipitation:")
+project_dataset$prcp <- as.double(project_dataset$prcp)
+summary(project_dataset$prcp)
+
+```
+
+
+```{r}
+# Data Visualization 8: Bar Graph for count of days with rainfall each year
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+# Convert 'precipitation' column to factor
+project_dataset$precipitation <- factor(project_dataset$precipitation, levels = c("No", "Yes"))
+
+# Count number of days with rainfall each year
+rainfall_counts <- project_dataset %>%
+  group_by(year) %>%
+  summarise(rainfall_days = sum(precipitation == "Yes"))
+
+# Create a bar plot
+ggplot(rainfall_counts, aes(x = year, y = rainfall_days, fill = factor(year))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = rainbow(nrow(rainfall_counts))) +
+  labs(title = "Number of Days with Rainfall Each Year",
+       x = "Year",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+```
+
+```{r}
+# Data Visualization 9: Box plots for wspd and pres
+
+# Load necessary library
+library(ggplot2)
+
+# Convert the data to the desired datatype
+project_dataset$wspd <- as.double(project_dataset$wspd)
+project_dataset$pres <- as.double(project_dataset$pres)
+
+# Create box plots for 'wdir' and 'wspd' columns
+ggplot(project_dataset, aes(x = "", y = wspd)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Box Plot of Wind Speed (wspd)",
+       x = "",
+       y = "Wind Speed")
+
+ggplot(project_dataset, aes(x = "", y = pres)) +
+  geom_boxplot(fill = "lightgreen") +
+  labs(title = "Box Plot of Air Pressure (pres)",
+       x = "",
+       y = "Air Pressure")
+```
+
